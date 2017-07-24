@@ -24,7 +24,7 @@ class Redis
     end
 
     def redis_search_alias_value(field)
-      return [] if field.blank? || field == '_was'.freeze
+      return [] if field.blank? || field == '_before_last_save'.freeze
       val = (instance_eval("self.#{field}") || ''.freeze).clone
       return [] unless val.class.in?([String, Array])
       val = val.to_s.split(',') if val.is_a?(String)
@@ -95,8 +95,8 @@ class Redis
 
     def redis_search_index_after_update
       if redis_search_index_need_reindex
-        titles = redis_search_alias_value("#{redis_search_options[:alias_field]}_was")
-        titles << send("#{redis_search_options[:title_field]}_was")
+        titles = redis_search_alias_value("#{redis_search_options[:alias_field]}_before_last_save")
+        titles << send("#{redis_search_options[:title_field]}_before_last_save")
         redis_search_index_delete(titles)
       end
 
